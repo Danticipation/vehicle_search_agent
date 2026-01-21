@@ -6,7 +6,8 @@ An automated agent system that monitors luxury vehicle listings and notifies you
 - **Multi-Agent Support:** Define multiple search profiles in `config/agents.yaml`.
 - **Async Architecture:** Built with Python 3.12, SQLAlchemy 2.0, and Playwright for high performance.
 - **Neon PostgreSQL:** Persistent storage for listings and deduplication.
-- **Bring A Trailer Integration:** Scrapes BaT auctions using headless Chrome.
+- **Multi-Provider Integration:** Scrapes listings from Bring A Trailer, Carfax, Cars.com, and AutoNation using Playwright.
+- **Marketcheck API Support:** Integrated with Marketcheck for high-quality vehicle data.
 - **Email Notifications:** Instant alerts via Gmail SMTP.
 
 ## Setup
@@ -18,11 +19,12 @@ An automated agent system that monitors luxury vehicle listings and notifies you
    ```
 
 2. **Configure Environment:**
-   Edit `.env` with your Neon Database URL and Gmail App Password.
+   Edit `.env` with your Neon Database URL, Gmail App Password, and optional API keys.
    ```env
    DATABASE_URL=postgresql+asyncpg://...
    GMAIL_USER=your-email@gmail.com
    GMAIL_APP_PASSWORD=your-app-password
+   MARKETCHECK_API_KEY=your-api-key (optional)
    ```
 
 3. **Define Agents:**
