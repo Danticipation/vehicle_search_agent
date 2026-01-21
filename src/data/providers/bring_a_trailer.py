@@ -38,12 +38,12 @@ class BringATrailerProvider(BaseProvider):
             logger.info("searching_bat", url=url)
             
             try:
-                # Use 'load' instead of 'networkidle' as BaT has many background requests
-                await page.goto(url, wait_until="load", timeout=60000)
+                # Use 'domcontentloaded' for faster response and to avoid background request timeouts
+                await page.goto(url, wait_until="domcontentloaded", timeout=60000)
                 
                 # Wait for any listing card to appear
                 try:
-                    await page.wait_for_selector(".listing-card", timeout=20000)
+                    await page.wait_for_selector(".listing-card", timeout=30000)
                 except Exception:
                     logger.warn("listing_cards_not_found_trying_alternate")
                     # Sometimes BaT uses different layouts
@@ -121,7 +121,10 @@ class BringATrailerProvider(BaseProvider):
             except Exception as e:
                 logger.error("bat_search_failed", error=str(e))
             finally:
-                await browser.close()
+                try:
+                    await browser.close()
+                except Exception:
+                    pass
                 
         return listings
 

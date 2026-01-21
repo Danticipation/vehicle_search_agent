@@ -13,6 +13,8 @@ class CarfaxProvider(BaseProvider):
         self.base_url = "https://www.carfax.com/cars-for-sale"
 
     async def search(self, params: dict) -> List[RawListing]:
+        # Carfax is extremely aggressive with bot detection.
+        # We use a more generic search URL to avoid 404s and detection.
         listings = []
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True, args=[
@@ -32,23 +34,25 @@ class CarfaxProvider(BaseProvider):
             model = params.get("models", [""])[0].lower().replace(" ", "-")
             year_min = params.get("year_min")
             
-            # Carfax URL structure based on user feedback
-            # https://www.carfax.com/cars-for-sale/ford/f-150/raptor
-            if make == "ford" and "raptor" in model:
-                url = f"{self.base_url}/ford/f-150/raptor"
-            else:
-                url = f"{self.base_url}/{make}/{model}"
-            
-            query_params = []
-            if year_min:
-                query_params.append(f"yearMin={year_min}")
-            
-            # Add a broad zip code if not provided to ensure we get results
+            # Use a more reliable URL structure for Carfax
             zip_code = params.get("location", {}).get("zip", "60601")
-            query_params.append(f"zip={zip_code}")
             
-            if query_params:
-                url += "?" + "&".join(query_params)
+            # Carfax URL structure for used cars:
+            # https://www.carfax.com/cars-for-sale/Used-BMW-M3/zip-60601
+            # or with year: https://www.carfax.com/cars-for-sale/Used-BMW-M3?yearMin=2021&zip=60601
+            
+            make_slug = make.replace(" ", "-").title()
+            model_slug = model.replace(" ", "-").title()
+            
+            if make and model:
+                url = f"{self.base_url}/{make}/{model}?zip={zip_code}"
+            elif make:
+                url = f"{self.base_url}/{make}?zip={zip_code}"
+            else:
+                url = f"{self.base_url}?zip={zip_code}"
+
+            if year_min:
+                url += f"&yearMin={year_min}"
             
             logger.info("searching_carfax", url=url)
             
@@ -65,12 +69,20 @@ class CarfaxProvider(BaseProvider):
 
                 # Wait for any listing-like element
                 try:
-                    await page.wait_for_selector("article, .srp-list-item, [class*='listing']", timeout=15000)
+                    # Carfax often uses 'article' or 'div' with specific classes
+                    # Based on screenshot, they are cards.
+                    await page.wait_for_selector("article, .srp-list-item, [class*='listing'], .listing-container, .srp-container", timeout=20000)
                 except Exception:
+                    # Check if it's a "No results" page vs blocked
+                    content = await page.content()
+                    if "Pardon Our Interruption" in content or "Access Denied" in content:
+                        logger.error("carfax_blocked_detected")
+                        return []
+                    
                     logger.warn("carfax_no_listings_found_selector")
                     return []
 
-                items = await page.query_selector_all("article, .srp-list-item, [class*='listing-container']")
+                items = await page.query_selector_all("article, .srp-list-item, [class*='listing-container'], .listing-container")
                 
                 for item in items:
                     try:
@@ -116,7 +128,10 @@ class CarfaxProvider(BaseProvider):
             except Exception as e:
                 logger.error("carfax_search_failed", error=str(e))
             finally:
-                await browser.close()
+                try:
+                    await browser.close()
+                except Exception:
+                    pass
                 
         return listings
 

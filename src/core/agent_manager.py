@@ -82,7 +82,9 @@ class AgentManager:
                             
                             # If a scraper fails 5 times in a row, it's likely blocked or down
                             # Increased from 3 to 5 because rare vehicles often return 0 results
-                            if consecutive_failures >= 5 and source not in ["marketcheck", "bringatrailer"]:
+                            # We only skip if we are reasonably sure it's a block, not just 0 results.
+                            # For now, we'll keep the counter but maybe we should check provider-specific block flags.
+                            if consecutive_failures >= 10 and source not in ["marketcheck", "bringatrailer"]:
                                 logger.warn("provider_likely_blocked_skipping", source=source)
                                 break
                                 

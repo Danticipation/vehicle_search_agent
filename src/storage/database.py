@@ -54,6 +54,8 @@ async def init_db(database_url: str):
     engine = create_async_engine(
         database_url, 
         echo=False,
+        pool_pre_ping=True,
+        pool_recycle=300,
         connect_args={"ssl": True} if "neon.tech" in database_url else {}
     )
     async with engine.begin() as conn:

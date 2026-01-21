@@ -39,11 +39,12 @@ class AutoNationProvider(BaseProvider):
             logger.info("searching_autonation", url=url)
             
             try:
-                await page.goto(url, wait_until="networkidle", timeout=60000)
+                # Use domcontentloaded instead of networkidle to avoid timeouts from background trackers
+                await page.goto(url, wait_until="domcontentloaded", timeout=60000)
                 
                 # Wait for results
                 try:
-                    await page.wait_for_selector(".vehicle-card, [class*='vehicle-card'], .inventory-item", timeout=20000)
+                    await page.wait_for_selector(".vehicle-card, [class*='vehicle-card'], .inventory-item", timeout=30000)
                 except Exception:
                     logger.warn("no_results_found_on_autonation")
                     return []
@@ -91,7 +92,10 @@ class AutoNationProvider(BaseProvider):
             except Exception as e:
                 logger.error("autonation_search_failed", error=str(e))
             finally:
-                await browser.close()
+                try:
+                    await browser.close()
+                except Exception:
+                    pass
                 
         return listings
 

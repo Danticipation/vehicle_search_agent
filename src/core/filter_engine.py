@@ -30,9 +30,14 @@ class FilterEngine:
                 if not m_match: continue
                 
                 mod_match = False
-                if listing.model and fuzz.partial_ratio(v.model.lower(), listing.model.lower()) > 85:
+                # Use a stricter check for model to avoid cross-matching (e.g. "Bronco" matching "Raptor" via some shared keyword)
+                # We check if the model name exists as a word in the title or model field
+                model_lower = v.model.lower()
+                target_text = (listing.model or listing.title).lower()
+                
+                if model_lower in target_text:
                     mod_match = True
-                elif not listing.model and fuzz.partial_ratio(v.model.lower(), listing.title.lower()) > 85:
+                elif fuzz.partial_ratio(model_lower, target_text) > 90:
                     mod_match = True
                 
                 if not mod_match: continue

@@ -126,14 +126,22 @@ class CarsComProvider(BaseProvider):
             except Exception as e:
                 logger.error("cars_com_search_failed", error=str(e))
             finally:
-                await browser.close()
+                try:
+                    await browser.close()
+                except Exception:
+                    pass
                 
         return listings
 
     def _parse_price(self, price_str: str) -> Optional[float]:
         if not price_str: return None
-        cleaned = re.sub(r'[^\d.]', '', price_str)
-        try: return float(cleaned)
+        # Remove everything except digits
+        cleaned = re.sub(r'[^\d]', '', price_str)
+        try:
+            val = float(cleaned)
+            # Sanity check: prices shouldn't be astronomical (e.g. concatenated strings)
+            if val > 10000000: return None 
+            return val
         except ValueError: return None
 
     def _parse_mileage(self, mileage_str: str) -> Optional[int]:
