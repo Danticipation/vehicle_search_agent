@@ -1,0 +1,40 @@
+agents:
+  - id: dream_car_search
+    name: "Dream Car Search - Lower 48"
+    enabled: true
+    schedule: "0 */4 * * *"
+    parameters:
+      vehicles:
+        - { make: "BMW", model: "M3", year_min: 2021 }
+        - { make: "BMW", model: "M4", year_min: 2021 }
+        - { make: "Cadillac", model: "Escalade V", year_min: 2023 }
+        - { make: "Cadillac", model: "Escalade ESV-V", year_min: 2023 }
+        - { make: "McLaren", model: "720S", year_min: 2018 }
+        - { make: "Porsche", model: "911", year_min: 2012 }
+        - { make: "Mercedes-Benz", model: "G63", year_min: 2020 }
+        - { make: "Ford", model: "Mustang GT500", year_min: 2020 }
+        - { make: "Mercedes-Benz", model: "C63", year_min: 2018 }
+        - { make: "Lamborghini", model: "Urus", year_min: 2019 }
+        - { make: "Audi", model: "R8", year_min: 2017 }
+        - { make: "Ford", model: "Raptor", year_min: 2023 }
+        - { make: "Ford", model: "Bronco Raptor", year_min: 2023 }
+        - { make: "Cadillac", model: "V Blackwing", year_min: 2022 }
+        - { make: "McLaren", model: "765LT", year_min: 2020 }
+        - { make: "Lamborghini", model: "Huracan LP 610-4", year_min: 2015 }
+        - { make: "Nissan", model: "GTR", year_min: 2010 }
+        - { make: "Porsche", model: "Cayenne GT Turbo", year_min: 2022 }
+        - { make: "Ferrari", model: "F8", year_min: 2020 }
+        - { make: "Ferrari", model: "458 Italia", year_min: 2010 }
+        - { make: "Ferrari", model: "458", year_min: 2017 }
+        - { make: "Ferrari", model: "488", year_min: 2017 }
+        - { make: "Dodge", model: "TRX", year_min: 2023 }
+        - { make: "Audi", model: "RS7", year_min: 2021 }
+        - { make: "BMW", model: "M8 Competition", year_min: 2021 }
+        - { make: "BMW", model: "M5 Competition", year_min: 2018 }
+      location:
+        zip: "60601" # Central US for broad search
+        radius_miles: 3000 # Covers lower 48
+      exclude_keywords: ["salvage", "rebuilt", "accident"]
+    sources: ["bringatrailer", "cars_com", "carfax", "autonation", "marketcheck"]
+    notifications:
+      email_to: ["newsharpellc@gmail.com"]
