@@ -39,8 +39,23 @@ class AgentManager:
 
     async def run_all_agents(self):
         logger.info("starting_all_agents_run")
-        tasks = [self.run_agent(agent_cfg) for agent_cfg in self.agents_config if agent_cfg.enabled]
-        await asyncio.gather(*tasks)
+        
+        # Load agents from database to ensure we have the latest modular profiles
+        async with self.session_factory() as session:
+            stmt = select(Agent).where(Agent.enabled == True)
+            result = await session.execute(stmt)
+            db_agents = result.scalars().all()
+            
+        tasks = []
+        for db_agent in db_agents:
+            try:
+                agent_cfg = AgentConfig(**db_agent.config_json)
+                tasks.append(self.run_agent(agent_cfg))
+            except Exception as e:
+                logger.error("failed_to_parse_agent_config", agent_id=db_agent.id, error=str(e))
+        
+        if tasks:
+            await asyncio.gather(*tasks)
         logger.info("finished_all_agents_run")
 
     async def run_agent(self, agent_cfg: AgentConfig):
