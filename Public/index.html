@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeLink - Luxury Vehicle Search Agent</title>
+    <style>
+        :root {
+            --primary: #00d1b2;
+            --dark: #1a1a1a;
+            --light: #f5f5f5;
+            --accent: #ffd700;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            padding: 2rem;
+        }
+        img.logo {
+            max-width: 300px;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            color: #ccc;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: rgba(0, 209, 178, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 2rem;
+        }
+        .links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--dark);
+        }
+        .btn-primary:hover {
+            background-color: #00b89c;
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: var(--dark);
+        }
+        footer {
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="LuxeLink-Logo_upscayl_2x_digital-art-4x_upscayl_2x_digital-art-4x.png" alt="LuxeLink Logo" class="logo">
+        <h1>LuxeLink Dashboard</h1>
+        <div class="status-badge">● System Online</div>
+        <p>
+            Your automated agent system is monitoring luxury vehicle listings across multiple platforms. 
+            Matches are being processed and notifications are sent instantly.
+        </p>
+        <div class="links">
+            <a href="#" class="btn btn-primary">View Recent Matches</a>
+            <a href="#" class="btn btn-outline">Manage Agents</a>
+        </div>
+    </div>
+    <footer>
+        &copy; 2026 LuxeLink Vehicle Search Agent. Powered by Gemini 3.0.
+    </footer>
+</body>
+</html>
