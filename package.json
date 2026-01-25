@@ -1,0 +1,33 @@
+{
+  "name": "vehicle_search_agent",
+  "version": "1.0.0",
+  "description": "An automated agent system that monitors luxury vehicle listings and notifies you of matches.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "buffer-from": "^1.1.2",
+    "debug": "^4.4.3",
+    "drizzle-orm": "^0.45.1",
+    "esbuild": "^0.25.12",
+    "esbuild-register": "^3.6.0",
+    "get-tsconfig": "^4.13.0",
+    "ms": "^2.1.3",
+    "resolve-pkg-maps": "^1.0.0",
+    "source-map": "^0.6.1",
+    "source-map-support": "^0.5.21"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.8"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "netlify dev:exec drizzle-kit migrate",
+    "db:studio": "netlify dev:exec drizzle-kit studio"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

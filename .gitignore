@@ -3,3 +3,6 @@
 /tests
 /test_output.txt
 /test_results.txt
+# Local Netlify folder
+.netlify
+node_modules
