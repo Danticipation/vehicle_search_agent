@@ -6,7 +6,7 @@ import { Car, ExternalLink, DollarSign, Gauge, Calendar } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 
 export default async function Dashboard() {
-  const allListings = await db.select().from(listings).orderBy(desc(listings.firstSeen));
+  const allListings = await db.select().from(listings).orderBy(desc(listings.firstSeen)) as (typeof listings.$inferSelect)[];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -16,7 +16,7 @@ export default async function Dashboard() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {allListings.map((listing) => (
+        {allListings.map((listing: typeof listings.$inferSelect) => (
           <div 
             key={listing.id} 
             className="bg-luxe-black/40 border border-luxe-gold/10 rounded-xl overflow-hidden hover:border-luxe-gold/30 transition-all group"
