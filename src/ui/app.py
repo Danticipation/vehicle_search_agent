@@ -45,7 +45,7 @@ def main():
     st.markdown("---")
 
     # Sidebar
-    st.sidebar.image(logo_path, use_container_width=True) if os.path.exists(logo_path) else None
+    st.sidebar.image(logo_path, width="stretch") if os.path.exists(logo_path) else None
     st.sidebar.header("Controls")
     if st.sidebar.button("🔄 Refresh Data"):
         st.rerun()
@@ -64,7 +64,7 @@ def main():
             for l in listings:
                 data.append({
                     "Date Found": l.first_seen.strftime("%Y-%m-%d %H:%M"),
-                    "Year": int(l.year) if l.year else "N/A",
+                    "Year": str(int(l.year)) if l.year is not None else "N/A",
                     "Title": l.title,
                     "Price": f"${l.price:,.2f}" if l.price else "Contact",
                     "Source": l.source,
@@ -73,12 +73,12 @@ def main():
             
             df = pd.DataFrame(data)
             st.dataframe(
-                df, 
+                df,
                 column_config={
                     "URL": st.column_config.LinkColumn("Listing Link")
                 },
                 hide_index=True,
-                use_container_width=True
+                width="stretch"
             )
 
     with tab2:

@@ -1,5 +1,6 @@
 /.env
 /.venv
+/venv
 /tests
 /test_output.txt
 /test_results.txt

@@ -1,8 +1,7 @@
 import asyncio
-import signal
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from src.utils.config import AppSettings, load_agents_from_yaml
-from src.storage.database import init_db, get_session_factory
+from src.storage.database import init_db, get_session_factory, Agent
 from src.core.agent_manager import AgentManager
 import structlog
 
@@ -23,11 +22,24 @@ async def main():
     engine = await init_db(settings.DATABASE_URL)
     session_factory = get_session_factory(engine)
 
-    # 3. Load Agents
+    # 3. Load Agents from YAML and sync to DB (so first run has agents)
     agents_config = load_agents_from_yaml("config/agents.yaml")
     if not agents_config:
         logger.error("no_agents_found_in_config")
         return
+
+    async with session_factory() as session:
+        for ac in agents_config:
+            existing = await session.get(Agent, ac.id)
+            config_json = ac.model_dump()
+            if existing:
+                existing.name = ac.name
+                existing.enabled = ac.enabled
+                existing.config_json = config_json
+            else:
+                session.add(Agent(id=ac.id, name=ac.name, enabled=ac.enabled, config_json=config_json))
+        await session.commit()
+    logger.info("agents_synced_from_yaml", count=len(agents_config))
 
     # 4. Initialize Manager
     manager = AgentManager(session_factory, settings, agents_config)
