@@ -246,9 +246,16 @@ def main():
                     # Some providers prefix with '%20' or other junk before the real URL.
                     if "http" in s and not s.startswith("http"):
                         s = s[s.find("http") :]
-                    if s.startswith("http"):
-                        return s
-                    return None
+                    if not s.startswith("http"):
+                        return None
+                    # Strip trailing size hints like " 320w" or "%20320w"
+                    for sep in ["%20", " "]:
+                        if sep in s:
+                            s = s.split(sep, 1)[0]
+                    if s.endswith(("w", "w\"")):
+                        # best-effort cleanup; final safety check relies on HTTP response
+                        pass
+                    return s
 
                 if not isinstance(raw_json, dict):
                     return urls
@@ -271,14 +278,21 @@ def main():
                                 cleaned = normalize(u)
                                 if cleaned:
                                     urls.append(cleaned)
-                # Dedupe while keeping order
-                out: list[str] = []
-                seen: set[str] = set()
+                # Many providers return the same image in multiple sizes (e.g. 320/640/960/1280).
+                # Group by folder and keep the largest-size URL per folder.
+                best_by_folder: dict[str, tuple[int, str]] = {}
                 for u in urls:
-                    if u not in seen:
-                        seen.add(u)
-                        out.append(u)
-                return out
+                    try:
+                        folder, filename = u.rsplit("/", 1)
+                    except ValueError:
+                        folder, filename = "", u
+                    digits = "".join(ch for ch in filename if ch.isdigit())
+                    width = int(digits) if digits else 0
+                    prev = best_by_folder.get(folder)
+                    if not prev or width > prev[0]:
+                        best_by_folder[folder] = (width, u)
+                # Preserve insertion order of folders
+                return [val[1] for _, val in best_by_folder.items()]
 
             def fmt_money(v):
                 if pd.isna(v):
@@ -320,9 +334,6 @@ def main():
                 if imgs:
                     st.markdown("**Photos**")
                     st.image(imgs[:6], width=300)
-                    # Also show direct links so you can verify they load correctly in the browser.
-                    for idx, u in enumerate(imgs[:6], start=1):
-                        st.markdown(f"{idx}. [{u}]({u})")
 
                 with st.expander("Raw data (advanced)"):
                     st.json(raw_json if isinstance(raw_json, dict) else {"raw_json": raw_json})
